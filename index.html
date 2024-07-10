@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    </head>
+    <script>
+        function sendMessage(path, query) {
+            return new Promise((resolve, reject)=>{
+                const queryString = query ? `?${query}` : '';
+                fetch(`/${path}${queryString}`)
+                .then(async function(res){
+                    console.log(res.ok);
+                    if(res.ok) {
+                        return res.text();
+                    } else {
+                        const text = await res.text();
+                        throw new Error(text);
+                    }  
+                })
+                .then(data=>{
+                    resolve(data);
+                })
+                .catch((e)=>{
+                    reject(e.message);
+                });
+            })
+        }
+        window.onload = function(){
+            const screenBoard = document.querySelector('#screen')
+            document.querySelector('#jiandao').addEventListener('click',async function(){
+                try {
+                    const html = await sendMessage('game', 'action=jiandao');
+                    screenBoard.innerHTML = html;
+                } catch( e ) {
+                    screenBoard.innerHTML = e;
+                }
+            });
+
+            document.querySelector('#shitou').addEventListener('click',async function(){
+                try {
+                    const html = await sendMessage('game', 'action=shitou');
+                    screenBoard.innerHTML = html;
+                } catch( e ) {
+                    console.error(e);
+                    screenBoard.innerHTML = e;
+                }
+            });
+
+            document.querySelector('#bu').addEventListener('click',async function(){
+                try {
+                    const html = await sendMessage('game', 'action=bu');
+                    screenBoard.innerHTML = html;
+                } catch( e ) {
+                    console.error(e);
+                    screenBoard.innerHTML = e;
+                }
+            });
+
+            document.querySelector('#reset').addEventListener('click',async function(){
+                try {
+                    const html = await sendMessage('reset');
+                    screenBoard.innerHTML = html;
+                } catch( e ) {
+                    console.error(e);
+                    screenBoard.innerHTML = e;
+                }
+            });
+        }
+    </script>
+    <body>
+        <h1>This is my test server</h1>
+        <h2 id="screen">And Say hello</h2>
+        <button id="jiandao">剪刀</button>
+        <button id="shitou">石头</button>
+        <button id="bu">布</button>
+        <button id="reset">reset</button>
+    </body>
+</html>
